@@ -1,0 +1,320 @@
+<?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+use Drupal\Core\Url;
+
+function data_menu() {
+  $items = array();
+  $items['data_submission'] = array(
+    'title' => t('Osdag User Information Form'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('data_submission_form'),
+    'access arguments' => array('access content'),
+    'description' => t('My form'),
+    'type' => MENU_CALLBACK,
+     "id" => "popup_window",
+  );
+ /*page_content .= "<div id='example-popup' class='popup'>
+                                    <div class='popup-body'>
+                                        <span class='popup-exit'></span>
+                                            <div id = 'popup-content' class='popup-content'>
+                                            </div>
+                                    </div>
+                            </div>";
+            $page_content .= "<div class='popup-overlay'></div>";*/
+  return $items;
+}
+
+
+function data_submission_form($form, &$form_state) {
+
+  $form['life_story'] = array(
+  '#type' => 'textarea',
+  '#attributes' => array('readonly' => 'readonly'),
+  '#default_value' => '
+Osdag®️ license and its resources are completely free of cost!
+
+Osdag®️ and the Osdag logo are the registered trademarks of the Indian Institute of Technology, Bombay
+
+Please fill the Osdag User Information Form’ given below. Your data is completely safe with IIT Bombay and shall be used only for internal quality assessment by the team, sending timely e-mail notification(s) regarding Osdag events/workshops, installer updates/patches,  etc.
+
+We will not spam you with frequent emails!',
+  '#rows' => 13,
+  '#cols' => 60,
+  
+);
+
+ $form['first_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('First Name'),
+    '#required' => TRUE,
+    '#description' => "Please enter your first name.",
+    '#size' => 20,
+    '#maxlength' => 20,
+  );
+$form['last_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Last Name'),
+    '#required' => TRUE,
+    '#description' => "Please enter your Last name.",
+    '#size' => 20,
+    '#maxlength' => 20,
+  );
+
+$form['org_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Institution/Organisation/Company/School (Full name)'),
+    '#required' => TRUE,
+    '#description' => "Please enter your Institution/Organisation/Company/School (Full name).",
+    '#size' => 100,
+  );
+
+$form['email_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email (Official, if available)'),
+    '#size' => 30,
+    '#description' => "Please enter your Email ID",
+    '#required' => TRUE,
+    
+  );
+
+$form['des'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Designation'),
+    '#required' => TRUE,
+    '#description' => "Please enter your Designation.",
+    '#size' => 20,
+    '#maxlength' => 20,
+  );
+
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+    //'#submit' => array('submit_validation'),
+  );
+
+   $form['skip'] = array(
+    '#type' => 'submit',
+    '#value' => t('Skip'),
+    '#limit_validation_errors' => array(),
+    '#submit' => array('custom_submit_for_this_button'),
+  );  
+
+ return $form;
+}
+
+
+function data_submission_form_validate($form, &$form_state) {
+  //Validation of first name
+  $form_state['values']['first_name'] = trim($form_state['values']['first_name']);
+  if ($form_state['values']['first_name'] != '')
+  {
+    if (strlen($form_state['values']['first_name']) > 32)
+    {
+      form_set_error('first_name', t('Maximum charater limit is 32 charaters only, please check the length of the First Name'));
+    } //strlen($form_state['values']['name']) > 250
+    else if (strlen($form_state['values']['first_name']) < 5)
+    {
+      form_set_error('first_name', t('Minimum charater limit is 5 charaters, please check the length of the Name'));      
+    }
+    else if(preg_match('/[\^£$%&*()}{@#~?><>.:;`|=_+¬]/', $form_state['values']['first_name']))
+      form_set_error('first_name', t('Special characters are not allowed for Name'));
+   //strlen($form_state['values']['name']) < 10
+  } //$form_state['values']['name'] != ''
+  else
+  {
+    form_set_error('first_name', t('Name shoud not be empty'));
+  }
+
+
+//Validation of last name
+  $form_state['values']['last_name'] = trim($form_state['values']['last_name']);
+  if ($form_state['values']['last_name'] != '')
+  {
+    if (strlen($form_state['values']['last_name']) > 32)
+    {
+      form_set_error('last_name', t('Maximum charater limit is 32 charaters only, please check the length of the Last Name'));
+    } //strlen($form_state['values']['name']) > 250
+    else if (strlen($form_state['values']['last_name']) < 2)
+    {
+      form_set_error('last_name', t('Minimum charater limit is 5 charaters, please check the length of the Name'));
+    }
+    else if(preg_match('/[\^£$%&*()}{@#~?><>.:;`|=_+¬]/', $form_state['values']['last_name']))
+      form_set_error('last_name', t('Special characters are not allowed for Name'));
+   //strlen($form_state['values']['name']) < 10
+  } //$form_state['values']['name'] != ''
+  else
+  {
+    form_set_error('last_name', t('Name shoud not be empty'));
+  }
+
+
+//Validation of Organisation name
+  $form_state['values']['org_name'] = trim($form_state['values']['org_name']);
+  if ($form_state['values']['org_name'] != '')
+  {
+    if (strlen($form_state['values']['org_name']) > 32)
+    {
+      form_set_error('org_name', t('Maximum charater limit is 32 charaters only, please check the length of the Name'));
+    } //strlen($form_state['values']['name']) > 250
+    else if (strlen($form_state['values']['org_name']) < 5)
+    {
+      form_set_error('org_name', t('Minimum charater limit is 5 charaters, please check the length of the Name'));
+      
+    }
+    else if(preg_match('/[\^£$%&*()}{@#~?><>.:;`|=_+¬]/', $form_state['values']['org_name']))
+      form_set_error('org_name', t('Special characters are not allowed for Name'));
+   //strlen($form_state['values']['name']) < 10
+  } //$form_state['values']['name'] != ''
+  else
+  {
+    form_set_error('org_name', t('Name shoud not be empty'));
+  }
+
+
+//Validation of Email_ID
+  if(!filter_var($form_state['values']['email_id'], FILTER_VALIDATE_EMAIL)){
+     form_set_error('email_id', t('Invalid Email Address'));
+    }
+
+  //validation of Description
+  $form_state['values']['des'] = trim($form_state['values']['des']);
+  if ($form_state['values']['des'] != '')
+  {
+    if (strlen($form_state['values']['des']) >= 2000)
+    {
+      form_set_error('des', t('Maximum charater limit is 2000 charaters only, please check the length'));
+    } //strlen($form_state['values']['description']) >= 50
+    else if (strlen($form_state['values']['des']) < 1)
+    {
+      form_set_error('des', t('Minimum charater limit is 1 charaters, please check the length'));
+    } //strlen($form_state['values']['description']) < 1
+  } //$form_state['values']['description'] != ''
+  else
+  {
+    form_set_error('des', t('Designation should not be empty'));
+  }
+}
+
+function data_submission_form_submit($form, &$form_state){
+
+   $v = $form_state["values"];
+   $first_name = trim($v['first_name']);
+   $last_name = trim($v['last_name']);
+   $org_name = trim($v['org_name']);
+   $email_id = trim($v['email_id']);
+   $des = trim($v['des']);
+   $result = "INSERT INTO {data_sub}
+    (
+     first_name,
+     last_name,
+     org_name,
+     email_id,
+     des
+    ) VALUES
+    (
+      :first_name,
+      :last_name,
+      :org_name,
+      :email_id,
+      :des
+    )";
+
+      $args = array(
+              ":first_name" => $v['first_name'],
+              ":last_name" => $v['last_name'],
+              ":org_name" => $v['org_name'],
+              ":email_id" => $v['email_id'],
+              ":des" => $v['des'],
+      );
+
+    $query = db_query($result, $args, array('return' => Database::RETURN_INSERT_ID));
+    drupal_set_message(t('The form has been submitted.')); 
+
+    if($form_state['clicked_button']['#value'] == $form_state['values']['submit'])
+    {  
+      $filename = "Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+      $filepath = "https://static.fossee.in/osdag/installation-files/Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+
+      
+      header("Pragma: public");
+      header("Expires: 0");
+      header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+      header("Cache-Control: public");
+      header("Content-Description: File Transfer");
+      header("Content-type: application/octet-stream");
+      header('Content-Disposition: attachment; filename="'.$filename.'"');
+      header("Content-Transfer-Encoding: binary");
+      header("Content-Length: ".filesize($filepath));
+      ob_end_flush();
+      @readfile($filepath);
+      header("Location: http://localhost/osdag_fossee_in_2015/resources/downloads'");
+      drupal_set_message(t("The form has been submitted.")); 
+    }
+  }
+
+ 
+function custom_submit_for_this_button($form, &$form_state) 
+{
+  $filename = "Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+      $filepath = "https://static.fossee.in/osdag/installation-files/Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+
+      
+      header("Pragma: public");
+      header("Expires: 0");
+      header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+      header("Cache-Control: public");
+      header("Content-Description: File Transfer");
+      header("Content-type: application/octet-stream");
+      header('Content-Disposition: attachment; filename="'.$filename.'"');
+      header("Content-Transfer-Encoding: binary");
+      header("Content-Length: ".filesize($filepath));
+      ob_end_flush();
+      @readfile($filepath);
+      header("Location: http://localhost/osdag_fossee_in_2015/resources/downloads'");
+      drupal_set_message(t("The form has been submitted.")); 
+}
+
+/*function submit_validation($form, &$form_state) 
+{
+  if($form_state['clicked_button']['#value'] == $form_state['values']['submit'])
+    {  
+      $filename = "Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+      $filepath = "https://static.fossee.in/osdag/installation-files/Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+
+      
+      header("Pragma: public");
+      header("Expires: 0");
+      header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+      header("Cache-Control: public");
+      header("Content-Description: File Transfer");
+      header("Content-type: application/octet-stream");
+      header('Content-Disposition: attachment; filename="'.$filename.'"');
+      header("Content-Transfer-Encoding: binary");
+      header("Content-Length: ".filesize($filepath));
+      ob_end_flush();
+      @readfile($filepath);
+      drupal_goto('http://localhost/assignment2/');
+      drupal_set_message(t("The form has been submitted.")); 
+
+      
+      $file="https://static.fossee.in/osdag/installation-files/Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz";
+      header("Content-type: application/octet-stream");
+      header("Content-Type: application/zip");
+      header("Content-Disposition: attachment; filename=\"$file\"");
+      header("Content-Transfer-Encoding: binary");
+      readfile("https://static.fossee.in/osdag/installation-files/Osdag_ubuntu_installer_v2018.06.a.3839.tar.gz");
+       drupal_goto('http://localhost/assignment2/');
+      drupal_set_message(t("The form has been submitted."));
+       header("Location: http://localhost/assignment2/'");
+    }
+}
+*/
+
+/* function data_init() {
+        drupal_add_css(drupal_get_path("module", "data") . "/css/pop.css");
+        drupal_add_js(drupal_get_path("module", "data") . "/js/data.js");
+  }*/
